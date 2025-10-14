@@ -28,12 +28,6 @@ public class Category {
 
     private String description;
 
-    // Khóa ngoại tới Brand
-    @ManyToOne
-    @JoinColumn(name = "brand_id", referencedColumnName = "id")
-    @Schema(description = "Brand liên kết với category (chỉ cần brand.id)")
-    private Brand brand;
-
     // Soft delete bằng cách set thời điểm xóa
     @Column(name = "deleted_at")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

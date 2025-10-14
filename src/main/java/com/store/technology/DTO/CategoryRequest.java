@@ -8,5 +8,4 @@ import lombok.Setter;
 public class CategoryRequest {
     private String name;
     private String description;
-    private Long brandId;
 }
