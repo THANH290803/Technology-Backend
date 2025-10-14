@@ -21,7 +21,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     // Lấy tất cả category chưa bị xóa
-    @GetMapping("/")
+    @GetMapping
     @Operation(summary = "Lấy danh sách category chưa bị xoá",
             description = "Trả về tất cả category có deleted_at IS NULL")
     public ResponseEntity<List<Category>> getAllActiveCategories() {
