@@ -37,17 +37,34 @@ public class CategoryService {
         return categoryRepository.findByIdIncludingDeleted(id);
     }
 
-    // 🔹 Tạo mới (KHÔNG cần brand)
+    // 🔹 Tạo mới hoặc khôi phục nếu đã bị xoá mềm
     public Category createCategory(CategoryRequest request) {
+        // Tìm xem có category cùng tên chưa (kể cả đã xoá)
+        Optional<Category> existingCategoryOpt = categoryRepository.findByNameIncludingDeleted(request.getName());
+
+        if (existingCategoryOpt.isPresent()) {
+            Category existingCategory = existingCategoryOpt.get();
+
+            // Nếu bị xoá mềm → khôi phục lại
+            if (existingCategory.getDeletedAt() != null) {
+                existingCategory.setDeletedAt(null);
+                existingCategory.setDescription(request.getDescription());
+                return categoryRepository.save(existingCategory);
+            }
+
+            // Nếu chưa bị xoá → vẫn tạo mới, cho phép trùng tên
+            // (hoặc bạn có thể chọn throw lỗi nếu muốn không trùng)
+        }
+
+        // Nếu chưa tồn tại → tạo mới
         Category category = new Category();
         category.setName(request.getName());
         category.setDescription(request.getDescription());
         category.setDeletedAt(null);
-
         return categoryRepository.save(category);
     }
 
-    // 🔹 Cập nhật (dùng PATCH, KHÔNG cần brand)
+    // 🔹 Cập nhật (bao gồm cả đã xoá)
     public Category updateCategory(Long id, CategoryRequest request) {
         Category category = categoryRepository.findByIdIncludingDeleted(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy category với id: " + id));

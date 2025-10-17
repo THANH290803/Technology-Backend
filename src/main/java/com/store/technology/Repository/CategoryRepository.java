@@ -24,4 +24,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // Tìm 1 category theo id (kể cả đã xoá)
     @Query(value = "SELECT * FROM categories WHERE id = :id", nativeQuery = true)
     Optional<Category> findByIdIncludingDeleted(@Param("id") Long id);
+
+    @Query(value = "SELECT * FROM categories WHERE name = :name LIMIT 1", nativeQuery = true)
+    Optional<Category> findByNameIncludingDeleted(@Param("name") String name);
+
 }

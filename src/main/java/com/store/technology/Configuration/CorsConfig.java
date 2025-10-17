@@ -17,7 +17,7 @@ public class CorsConfig {
         // ✅ Cho phép các domain được truy cập API
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000", // FE local
-                "https://your-frontend-domain.vercel.app", // FE deploy
+                "https://technology-admin-web.vercel.app", // FE deploy
                 "https://technology-frontend.onrender.com" // ví dụ FE trên Render
         ));
 
