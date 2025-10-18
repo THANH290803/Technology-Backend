@@ -64,13 +64,25 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    // 🔹 Cập nhật (bao gồm cả đã xoá)
+    // 🔹 Cập nhật (bao gồm cả danh mục đã xoá mềm)
     public Category updateCategory(Long id, CategoryRequest request) {
+        // Tìm category kể cả đã xoá
         Category category = categoryRepository.findByIdIncludingDeleted(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy category với id: " + id));
 
-        if (request.getName() != null) category.setName(request.getName());
-        if (request.getDescription() != null) category.setDescription(request.getDescription());
+        // ✅ Cho phép đổi tên, kể cả trùng với category đã bị xoá mềm khác
+        if (request.getName() != null) {
+            // Kiểm tra trùng tên với category đang hoạt động (deleted_at IS NULL)
+            Optional<Category> existingActiveCategory = categoryRepository.findByNameActive(request.getName());
+            if (existingActiveCategory.isPresent() && !existingActiveCategory.get().getId().equals(id)) {
+                throw new IllegalArgumentException("Tên danh mục này đã tồn tại!");
+            }
+            category.setName(request.getName());
+        }
+
+        if (request.getDescription() != null) {
+            category.setDescription(request.getDescription());
+        }
 
         return categoryRepository.save(category);
     }
