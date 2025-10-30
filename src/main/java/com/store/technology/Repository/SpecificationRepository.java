@@ -9,18 +9,18 @@ import java.util.List;
 
 public interface SpecificationRepository extends JpaRepository<Specification, Long> {
     // ✅ Lấy tất cả (kể cả đã xoá)
-    @Query("SELECT s FROM Specification s")
+    @Query("SELECT specification FROM Specification specification")
     List<Specification> findAllIncludingDeleted();
 
     // ✅ Lấy tất cả chưa xoá
-    @Query("SELECT s FROM Specification s WHERE s.deletedAt IS NULL")
+    @Query("SELECT specification FROM Specification specification WHERE specification.deletedAt IS NULL")
     List<Specification> findAllNotDeleted();
 
     // ✅ Lấy 1 (kể cả đã xoá)
-    @Query("SELECT s FROM Specification s WHERE s.id = :id")
-    Specification findAnyById(@Param("id") Long id);
+    @Query("SELECT specification FROM Specification specification WHERE specification.id = :id")
+    Specification findAnyById(Long id);
 
     // ✅ Lấy 1 (chưa xoá)
-    @Query("SELECT s FROM Specification s WHERE s.id = :id AND s.deletedAt IS NULL")
-    Specification findNotDeletedById(@Param("id") Long id);
+    @Query("SELECT specification FROM Specification specification WHERE specification.id = :id AND specification.deletedAt IS NULL")
+    Specification findNotDeletedById(Long id);
 }

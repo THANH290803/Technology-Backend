@@ -1,8 +1,9 @@
 package com.store.technology.Service;
 
+import com.store.technology.Entity.Configuration;
 import com.store.technology.Entity.Specification;
+import com.store.technology.Repository.ConfigurationRepository;
 import com.store.technology.Repository.SpecificationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,66 +11,77 @@ import java.util.List;
 
 @Service
 public class SpecificationService {
-    @Autowired
-    private SpecificationRepository specificationRepository;
+    private final SpecificationRepository repository;
+    private final ConfigurationRepository configurationRepository;
 
-    // Lấy tất cả (kể cả xoá)
-    public List<Specification> findAllIncludingDeleted() {
-        return specificationRepository.findAllIncludingDeleted();
+    public SpecificationService(SpecificationRepository repository, ConfigurationRepository configurationRepository) {
+        this.repository = repository;
+        this.configurationRepository = configurationRepository;
     }
 
-    // Lấy tất cả chưa xoá
-    public List<Specification> findAllNotDeleted() {
-        return specificationRepository.findAllNotDeleted();
+    public List<Specification> getAllNotDeleted() {
+        return repository.findAllNotDeleted();
     }
 
-    // Lấy 1 (kể cả xoá)
-    public Specification findAnyById(Long id) {
-        return specificationRepository.findAnyById(id);
+    public List<Specification> getAllIncludingDeleted() {
+        return repository.findAllIncludingDeleted();
     }
 
-    // Lấy 1 (chưa xoá)
-    public Specification findNotDeletedById(Long id) {
-        return specificationRepository.findNotDeletedById(id);
+    public Specification getById(Long id, boolean includeDeleted) {
+        return includeDeleted ? repository.findAnyById(id) : repository.findNotDeletedById(id);
     }
 
-    // Thêm mới
     public Specification save(Specification specification) {
-        return specificationRepository.save(specification);
+        return repository.save(specification);
     }
 
-    // Cập nhật (PATCH)
-    public Specification update(Long id, Specification updatedSpec) {
-        Specification existing = specificationRepository.findAnyById(id);
-        if (existing == null) {
-            throw new RuntimeException("Không tìm thấy specification id: " + id);
-        }
+    // ✅ Thêm mới từ JSON
+    public Specification createFromJson(String name, String value, Long configurationId) {
+        Configuration config = configurationRepository.findById(configurationId).orElse(null);
+        if (config == null) return null;
 
-        if (updatedSpec.getName() != null) {
-            existing.setName(updatedSpec.getName());
-        }
-        if (updatedSpec.getConfiguration() != null) {
-            existing.setConfiguration(updatedSpec.getConfiguration());
-        }
-
-        return specificationRepository.save(existing);
+        Specification spec = new Specification();
+        spec.setName(name);
+        spec.setValue(value);
+        spec.setConfiguration(config);
+        return repository.save(spec);
     }
 
-    // Xoá mềm
+    public Specification updateFromJson(Long id, String name, String value, Long configurationId) {
+        Specification existing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Specification có id = " + id));
+
+        // 🟢 Chỉ cập nhật field nào có dữ liệu
+        if (name != null && !name.isBlank()) {
+            existing.setName(name);
+        }
+        if (value != null && !value.isBlank()) {
+            existing.setValue(value);
+        }
+        if (configurationId != null) {
+            Configuration config = configurationRepository.findById(configurationId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy Configuration có id = " + configurationId));
+            existing.setConfiguration(config);
+        }
+
+        return repository.save(existing);
+    }
+
+    // ✅ Xoá mềm
     public void softDelete(Long id) {
-        Specification spec = specificationRepository.findAnyById(id);
-        if (spec != null) {
-            spec.setDeletedAt(LocalDateTime.now());
-            specificationRepository.save(spec);
+        Specification existing = repository.findNotDeletedById(id);
+        if (existing != null) {
+            existing.setDeletedAt(LocalDateTime.now());
+            repository.save(existing);
         }
     }
 
-    // Khôi phục
+    // ✅ Khôi phục
     public void restore(Long id) {
-        Specification spec = specificationRepository.findAnyById(id);
-        if (spec != null) {
-            spec.setDeletedAt(null);
-            specificationRepository.save(spec);
+        Specification existing = repository.findAnyById(id);
+        if (existing != null && existing.getDeletedAt() != null) {
+            existing.setDeletedAt(null);
+            repository.save(existing);
         }
     }
 }

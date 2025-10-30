@@ -15,4 +15,6 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
     // Tìm theo id (kể cả đã xoá)
     @Query(value = "SELECT * FROM brands WHERE id = :id", nativeQuery = true)
     Optional<Brand> findByIdIncludingDeleted(Long id);
+
+    Optional<Brand> findByNameIgnoreCase(String name);
 }

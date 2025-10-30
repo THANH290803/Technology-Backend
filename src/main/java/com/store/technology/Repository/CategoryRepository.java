@@ -31,4 +31,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // 🔍 Tìm category đang hoạt động theo tên
     @Query(value = "SELECT * FROM categories WHERE name = :name AND deleted_at IS NULL LIMIT 1", nativeQuery = true)
     Optional<Category> findByNameActive(@Param("name") String name);
+
+    Optional<Category> findByNameIgnoreCase(String name);
 }

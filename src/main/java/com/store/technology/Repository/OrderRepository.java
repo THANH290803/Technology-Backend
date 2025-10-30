@@ -27,4 +27,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // ✅ Lấy 1 (chưa xoá)
     @Query(value = "SELECT * FROM orders WHERE id = :id AND deleted_at IS NULL", nativeQuery = true)
     Order findNotDeletedById(@Param("id") Long id);
+
+    List<Order> findAllByDeletedAtIsNull();
 }

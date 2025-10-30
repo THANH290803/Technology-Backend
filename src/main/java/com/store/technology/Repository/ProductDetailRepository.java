@@ -1,27 +1,31 @@
 package com.store.technology.Repository;
 
 import com.store.technology.Entity.ProductDetail;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
+@Transactional
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long> {
-    // ✅ Lấy tất cả (kể cả đã xoá)
-    @Query("SELECT p FROM ProductDetail p")
-    List<ProductDetail> findAllIncludingDeleted();
-
-    // ✅ Lấy tất cả chưa xoá
-    @Query("SELECT p FROM ProductDetail p WHERE p.deletedAt IS NULL")
+    @Query("SELECT pd FROM ProductDetail pd WHERE pd.deletedAt IS NULL")
     List<ProductDetail> findAllNotDeleted();
 
-    // ✅ Lấy 1 (kể cả đã xoá)
-    @Query("SELECT p FROM ProductDetail p WHERE p.id = :id")
+    @Query("SELECT pd FROM ProductDetail pd")
+    List<ProductDetail> findAllIncludingDeleted();
+
+    @Query("SELECT pd FROM ProductDetail pd WHERE pd.id = :id AND pd.deletedAt IS NULL")
+    ProductDetail findNotDeletedById(@Param("id") Long id);
+
+    @Query("SELECT pd FROM ProductDetail pd WHERE pd.id = :id")
     ProductDetail findAnyById(@Param("id") Long id);
 
-    // ✅ Lấy 1 (chưa xoá)
-    @Query("SELECT p FROM ProductDetail p WHERE p.id = :id AND p.deletedAt IS NULL")
-    ProductDetail findNotDeletedById(@Param("id") Long id);
+    // Phải trả về Optional
+    Optional<ProductDetail> findByProduct_IdAndConfiguration_Id(Long productId, Long configurationId);
+
+    void deleteAllByProductId(Long productId);
 
 }

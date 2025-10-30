@@ -15,4 +15,6 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, Lo
 
     // Lấy 1 bản ghi chưa xoá
     Optional<Configuration> findByIdAndDeletedAtIsNull(Long id);
+
+    Optional<Configuration> findByNameIgnoreCase(String name);
 }

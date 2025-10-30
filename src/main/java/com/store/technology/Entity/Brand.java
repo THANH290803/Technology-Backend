@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 // Khi gọi entityManager.remove() hoặc repo.delete(entity) -> sẽ chạy UPDATE thay vì DELETE
 @SQLDelete(sql = "UPDATE brands SET deleted_at = NOW() WHERE id = ?")
 // Mặc định các truy vấn sẽ thêm điều kiện "deleted_at IS NULL"

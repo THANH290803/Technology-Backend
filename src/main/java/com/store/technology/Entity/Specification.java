@@ -1,14 +1,19 @@
 package com.store.technology.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "specifications")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Specification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,9 +23,13 @@ public class Specification {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String value;
+
     // 🔗 Khóa ngoại tới Configuration
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "configuration_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Configuration configuration;
 
     @Column(name = "deleted_at")
