@@ -86,7 +86,7 @@ public class SpecificationController {
         }
     }
 
-    @GetMapping("/specifications/configuration/{configurationId}")
+    @GetMapping("/configuration/{configurationId}")
     @Operation(summary = "Lấy Specification theo Configuration Id", description = "Lấy Specification theo Configuration Id")
     public ResponseEntity<List<Specification>> getByConfiguration(@PathVariable Long configurationId,
                                                                   @RequestParam(defaultValue = "false") boolean includeDeleted) {
