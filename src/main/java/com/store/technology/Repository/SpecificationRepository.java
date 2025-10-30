@@ -23,4 +23,12 @@ public interface SpecificationRepository extends JpaRepository<Specification, Lo
     // ✅ Lấy 1 (chưa xoá)
     @Query("SELECT specification FROM Specification specification WHERE specification.id = :id AND specification.deletedAt IS NULL")
     Specification findNotDeletedById(Long id);
+
+    // 🟢 Lấy tất cả Specification theo configurationId (không bị xóa)
+    @Query("SELECT s FROM Specification s WHERE s.configuration.id = :configurationId AND s.deletedAt IS NULL")
+    List<Specification> findByConfigurationId(Long configurationId);
+
+    // 🟣 (Tuỳ chọn) Bao gồm cả những cái đã bị xóa mềm
+    @Query("SELECT s FROM Specification s WHERE s.configuration.id = :configurationId")
+    List<Specification> findAllByConfigurationIdIncludingDeleted(Long configurationId);
 }

@@ -67,6 +67,13 @@ public class SpecificationService {
         return repository.save(existing);
     }
 
+    // ✅ Lấy Specification theo configurationId
+    public List<Specification> getByConfigurationId(Long configurationId, boolean includeDeleted) {
+        return includeDeleted
+                ? repository.findAllByConfigurationIdIncludingDeleted(configurationId)
+                : repository.findByConfigurationId(configurationId);
+    }
+
     // ✅ Xoá mềm
     public void softDelete(Long id) {
         Specification existing = repository.findNotDeletedById(id);

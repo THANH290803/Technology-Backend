@@ -86,6 +86,14 @@ public class SpecificationController {
         }
     }
 
+    @GetMapping("/specifications/configuration/{configurationId}")
+    @Operation(summary = "Lấy Specification theo Configuration Id", description = "Lấy Specification theo Configuration Id")
+    public ResponseEntity<List<Specification>> getByConfiguration(@PathVariable Long configurationId,
+                                                                  @RequestParam(defaultValue = "false") boolean includeDeleted) {
+        List<Specification> specs = specificationService.getByConfigurationId(configurationId, includeDeleted);
+        return ResponseEntity.ok(specs);
+    }
+
 
     // 🔹 Xoá mềm
     @PatchMapping("/{id}/delete")
