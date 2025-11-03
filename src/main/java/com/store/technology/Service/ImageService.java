@@ -64,4 +64,10 @@ public class ImageService {
         cloudinaryService.delete(image.getPublicId());
         imageRepository.delete(image);
     }
+
+    // Lấy ảnh theo productId
+    public List<Image> getImagesByProductId(Long productId) {
+        return imageRepository.findByProduct_Id(productId);
+    }
+
 }

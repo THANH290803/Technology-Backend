@@ -46,6 +46,13 @@ public class ImageController {
         return ResponseEntity.ok(imageService.getAllImages());
     }
 
+    @Operation(summary = "📷 Lấy tất cả ảnh theo productId")
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<Image>> getImagesByProductId(@PathVariable Long productId) {
+        List<Image> images = imageService.getImagesByProductId(productId);
+        return ResponseEntity.ok(images);
+    }
+
     @Operation(summary = "🗑️ Xóa ảnh theo ID (xóa luôn trên Cloudinary)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteImage(@PathVariable Long id) throws IOException {
