@@ -38,6 +38,12 @@ public class ProductDetailService {
         return includeDeleted ? repository.findAnyById(id) : repository.findNotDeletedById(id);
     }
 
+    // Lấy danh sách ProductDetail theo productId (chưa xoá mềm)
+    public List<ProductDetail> getByProductId(Long productId) {
+        return repository.findByProductId(productId);
+    }
+
+
     public ProductDetail save(ProductDetail detail) {
         return repository.save(detail);
     }

@@ -54,6 +54,14 @@ public class ProductDetailController {
         return detail != null ? ResponseEntity.ok(detail) : ResponseEntity.notFound().build();
     }
 
+    // 🔹 Lấy danh sách ProductDetail theo productId
+    @GetMapping("/{productId}")
+    @Operation(summary = "Lấy danh sách Product Detail theo productId", description = "Chỉ lấy các Product Detail chưa bị xoá mềm của product cụ thể")
+    public ResponseEntity<List<ProductDetail>> getByProductId(@PathVariable Long productId) {
+        List<ProductDetail> details = service.getByProductId(productId);
+        return ResponseEntity.ok(details);
+    }
+
     // 🔹 Thêm mới
     @PostMapping
     @Operation(summary = "Thêm mới Product Detail", description = "Tạo Product Detail mới với configurationId, productId, quantity, price")

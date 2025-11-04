@@ -28,4 +28,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
 
     void deleteAllByProductId(Long productId);
 
+    // 🆕 Thêm hàm này để lấy danh sách ProductDetail theo productId
+    @Query("SELECT pd FROM ProductDetail pd WHERE pd.product.id = :productId AND pd.deletedAt IS NULL")
+    List<ProductDetail> findByProductId(Long productId);
+
 }
