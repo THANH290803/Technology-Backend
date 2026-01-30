@@ -26,9 +26,22 @@ public class ProductDetailService {
         this.configurationRepository = configurationRepository;
     }
 
-    public List<ProductDetail> getAllNotDeleted() {
-        return repository.findAllNotDeleted();
+    public List<ProductDetail> getFiltered(Long categoryId,
+                                           List<Long> brandId,
+                                           Integer minPrice,
+                                           Integer maxPrice,
+                                           String sortBy,
+                                           String sortDir) {
+        return repository.findFiltered(
+                categoryId,
+                brandId != null && !brandId.isEmpty() ? brandId : null,
+                minPrice,
+                maxPrice,
+                sortBy != null ? sortBy : "createdAt",
+                sortDir != null ? sortDir : "desc"
+        );
     }
+
 
     public List<ProductDetail> getAllIncludingDeleted() {
         return repository.findAllIncludingDeleted();
@@ -44,21 +57,6 @@ public class ProductDetailService {
     }
 
 
-    public ProductDetail save(ProductDetail detail) {
-        return repository.save(detail);
-    }
-
-    public ProductDetail update(Long id, ProductDetail updated) {
-        ProductDetail existing = repository.findAnyById(id);
-        if (existing == null) return null;
-
-        existing.setQuantity(updated.getQuantity());
-        existing.setPrice(updated.getPrice());
-        existing.setConfiguration(updated.getConfiguration());
-        existing.setProduct(updated.getProduct());
-        return repository.save(existing);
-    }
-
     public ProductDetail createFromJson(Long configId, Long productId, Integer quantity, Integer price) {
         Configuration config = configurationRepository.findById(configId).orElse(null);
         Product product = productRepository.findById(productId).orElse(null);
@@ -69,6 +67,7 @@ public class ProductDetailService {
         detail.setProduct(product);
         detail.setQuantity(quantity);
         detail.setPrice(price);
+
         return repository.save(detail);
     }
 

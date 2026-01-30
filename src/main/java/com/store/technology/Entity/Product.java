@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@DynamicUpdate
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +44,10 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Category category;
+
+    // 🟢 Mô tả dài (TEXT vì có thể rất dài)
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
     @Column(name = "is_deleted")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -29,4 +29,36 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Order findNotDeletedById(@Param("id") Long id);
 
     List<Order> findAllByDeletedAtIsNull();
+
+    @Query("""
+    SELECT o FROM Order o
+    WHERE o.userId = :userId
+      AND o.deletedAt IS NULL
+    ORDER BY o.createdDate DESC
+""")
+    List<Order> findByUserIdNotDeleted(@Param("userId") Long userId);
+
+    @Query(
+            value = """
+    SELECT COUNT(*)
+    FROM orders o
+    WHERE o.user_id = :userId
+      AND o.status <> '5'
+  """,
+            nativeQuery = true
+    )
+    Long countByUserId(@Param("userId") Long userId);
+
+
+    @Query(
+            value = """
+    SELECT COALESCE(SUM(CAST(o.total_price AS BIGINT)), 0)
+    FROM orders o
+    WHERE o.user_id = :userId
+      AND o.status <> '5'
+  """,
+            nativeQuery = true
+    )
+    Long sumTotalPriceByUserId(@Param("userId") Long userId);
+
 }

@@ -1,5 +1,6 @@
 package com.store.technology.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,9 @@ public class Order {
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
+    @Column(name = "order_code", nullable = false, unique = true, length = 12)
+    private String orderCode; // mã đơn hàng 12 ký tự
+
     @Column(name = "customer_name", nullable = true, length = 255)
     private String customerName;
 
@@ -37,6 +41,15 @@ public class Order {
     @Column(name = "customer_address", nullable = true, length = 255)
     private String customerAddress;
 
+    @Column(name = "total_price")
+    private Integer totalPrice; // tổng tiền đã bao gồm VAT
+
+    @Column(name = "vat")
+    private Integer vat; // VAT riêng
+
+    @Column(name = "note", length = 500, nullable = true)
+    private String note; // ghi chú thêm của khách
+
     @Column(name = "payment_method", nullable = true)
     private Integer paymentMethod;
 
@@ -45,6 +58,7 @@ public class Order {
     private Long userId; // khoá ngoại liên kết với bảng users
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OrderDetail> orderDetails;
 
     @Column(name = "deleted_at")

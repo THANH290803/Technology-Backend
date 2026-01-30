@@ -73,9 +73,11 @@ public class ProductService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy categoryId: " + request.getCategoryId()));
 
+
         Product product = Product.builder()
                 .name(request.getName())
                 .totalQuality(request.getTotalQuality())
+                .description(request.getDescription())
                 .brand(brand)
                 .category(category)
                 .isDeleted(false)
@@ -91,6 +93,7 @@ public class ProductService {
         Product product = new Product();
         product.setName(request.getName());
         product.setTotalQuality(request.getTotalQuality());
+        product.setDescription(request.getDescription());
 
         Brand brand = brandRepository.findById(request.getBrandId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thương hiệu"));
@@ -100,7 +103,7 @@ public class ProductService {
         product.setBrand(brand);
         product.setCategory(category);
 
-        Product savedProduct = productRepository.save(product);
+        Product savedProduct = productRepository.saveAndFlush(product);
 
         // Thêm product details
         if (request.getProductDetails() != null) {
@@ -122,6 +125,7 @@ public class ProductService {
     }
 
     // 🟡 Cập nhật sản phẩm
+    @Transactional
     public Product updateProductWithProductDetail(Long id, ProductRequest request) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm có ID: " + id));
@@ -129,6 +133,7 @@ public class ProductService {
         // 🟢 Cập nhật thông tin cơ bản
         if (request.getName() != null) existingProduct.setName(request.getName());
         if (request.getTotalQuality() != null) existingProduct.setTotalQuality(request.getTotalQuality());
+        if (request.getDescription() != null) existingProduct.setDescription(request.getDescription());
 
         if (request.getBrandId() != null) {
             Brand brand = brandRepository.findById(request.getBrandId())
@@ -161,7 +166,7 @@ public class ProductService {
             }
         }
 
-        return productRepository.save(existingProduct);
+        return productRepository.saveAndFlush(existingProduct);
     }
 
 
@@ -172,6 +177,7 @@ public class ProductService {
 
         if (request.getName() != null) existing.setName(request.getName());
         if (request.getTotalQuality() != null) existing.setTotalQuality(request.getTotalQuality());
+        if (request.getDescription() != null) existing.setDescription(request.getDescription());
 
         if (request.getBrandId() != null) {
             Brand brand = brandRepository.findById(request.getBrandId())
@@ -260,8 +266,9 @@ public class ProductService {
                 String configName = row.getCell(3).getStringCellValue().trim();
                 int price = (int) row.getCell(4).getNumericCellValue();
                 int quantity = (int) row.getCell(5).getNumericCellValue();
+                String description = row.getCell(6).getStringCellValue().trim();
 
-                saveProductFromFile(name, brandName, categoryName, configName, price, quantity);
+                saveProductFromFile(name, brandName, categoryName, configName, price, quantity, description);
             }
             workbook.close();
         }
@@ -280,13 +287,14 @@ public class ProductService {
                 String configName = record.get("configuration_name").trim();
                 int price = Integer.parseInt(record.get("price").trim());
                 int quantity = Integer.parseInt(record.get("quantity").trim());
+                String description = record.get("description").trim();
 
-                saveProductFromFile(name, brandName, categoryName, configName, price, quantity);
+                saveProductFromFile(name, brandName, categoryName, configName, price, quantity, description);
             }
         }
     }
 
-    private void saveProductFromFile(String name, String brandName, String categoryName, String configName, int price, int quantity) {
+    private void saveProductFromFile(String name, String brandName, String categoryName, String configName, int price, int quantity, String description) {
         Brand brand = findOrCreate(brandName, brandRepository, n -> Brand.builder().name(n).build());
         Category category = findOrCreate(categoryName, categoryRepository, n -> Category.builder().name(n).build());
         Configuration config = findOrCreate(configName, configurationRepository, n -> Configuration.builder().name(n).build());
@@ -296,6 +304,7 @@ public class ProductService {
                 .brand(brand)
                 .category(category)
                 .totalQuality(quantity)
+                .description(description)
                 .build();
         productRepository.save(product);
 

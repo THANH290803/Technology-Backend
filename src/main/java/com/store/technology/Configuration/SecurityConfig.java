@@ -33,7 +33,16 @@ public class SecurityConfig {
             "/swagger-api/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
-            "/webjars/**"
+            "/webjars/**",
+            "/api/categories/**",  // cho phép GET public
+            "/api/users/**",         // cho phép GET public
+            "/api/brands/**",
+            "/api/products/**",
+            "/api/product-details/**",
+            "/api/images/**",
+            "/api/orders/**",
+            "/api/configurations/**",
+            "/api/specifications/**",
     };
 
     @Bean
@@ -57,7 +66,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configure(http)) // ✅ Cho phép CORS
+                .cors(cors -> cors.configure(http)) // Cho phép CORS
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()

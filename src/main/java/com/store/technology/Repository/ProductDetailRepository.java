@@ -29,7 +29,32 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, Lo
     void deleteAllByProductId(Long productId);
 
     // 🆕 Thêm hàm này để lấy danh sách ProductDetail theo productId
-    @Query("SELECT pd FROM ProductDetail pd WHERE pd.product.id = :productId AND pd.deletedAt IS NULL")
-    List<ProductDetail> findByProductId(Long productId);
+    @Query("SELECT pd FROM ProductDetail pd " +
+            "LEFT JOIN FETCH pd.configuration c " +
+            "LEFT JOIN FETCH c.specifications s " +
+            "WHERE pd.product.id = :productId AND pd.deletedAt IS NULL")
+    List<ProductDetail> findByProductId(@Param("productId") Long productId);
+
+    // phương thức filter theo category, brand, giá
+    @Query("SELECT pd FROM ProductDetail pd " +
+            "JOIN pd.product p " +
+            "LEFT JOIN p.brand b " +
+            "LEFT JOIN p.category c " +
+            "WHERE pd.deletedAt IS NULL " +
+            "AND (:categoryId IS NULL OR c.id = :categoryId) " +
+            "AND (:brandId IS NULL OR b.id IN :brandId) " +  // <── DÙNG IN
+            "AND (:minPrice IS NULL OR pd.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR pd.price <= :maxPrice) " +
+            "ORDER BY " +
+            "CASE WHEN :sortBy = 'price' AND :sortDir = 'asc' THEN pd.price END ASC, " +
+            "CASE WHEN :sortBy = 'price' AND :sortDir = 'desc' THEN pd.price END DESC")
+    List<ProductDetail> findFiltered(
+            @Param("categoryId") Long categoryId,
+            @Param("brandId") List<Long> brandId,
+            @Param("minPrice") Integer minPrice,
+            @Param("maxPrice") Integer maxPrice,
+            @Param("sortBy") String sortBy,
+            @Param("sortDir") String sortDir
+    );
 
 }

@@ -30,7 +30,7 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
-    @Operation(summary = "📤 Upload nhiều ảnh từ máy tính (có gán ProductId)")
+    @Operation(summary = "Upload nhiều ảnh từ máy tính (có gán ProductId)")
     @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
     public ResponseEntity<List<Image>> uploadImages(
             @RequestParam("files") List<MultipartFile> files,
@@ -40,20 +40,20 @@ public class ImageController {
         return ResponseEntity.ok(images);
     }
 
-    @Operation(summary = "📸 Lấy toàn bộ ảnh (mọi product)")
+    @Operation(summary = "Lấy toàn bộ ảnh (mọi product)")
     @GetMapping
     public ResponseEntity<List<Image>> getAllImages() {
         return ResponseEntity.ok(imageService.getAllImages());
     }
 
-    @Operation(summary = "📷 Lấy tất cả ảnh theo productId")
+    @Operation(summary = "Lấy tất cả ảnh theo productId")
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<Image>> getImagesByProductId(@PathVariable Long productId) {
         List<Image> images = imageService.getImagesByProductId(productId);
         return ResponseEntity.ok(images);
     }
 
-    @Operation(summary = "🗑️ Xóa ảnh theo ID (xóa luôn trên Cloudinary)")
+    @Operation(summary = "Xóa ảnh theo ID (xóa luôn trên Cloudinary)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteImage(@PathVariable Long id) throws IOException {
         imageService.deleteImage(id);

@@ -25,21 +25,21 @@ public class SpecificationController {
         this.specificationService = specificationService;
     }
 
-    // 🔹 Lấy tất cả chưa xoá
+    // Lấy tất cả chưa xoá
     @GetMapping
     @Operation(summary = "Lấy danh sách Specification", description = "Chỉ lấy các Specification chưa bị xoá mềm")
     public ResponseEntity<List<Specification>> getAllNotDeleted() {
         return ResponseEntity.ok(specificationService.getAllNotDeleted());
     }
 
-    // 🔹 Lấy tất cả bao gồm cả xoá mềm
+    // Lấy tất cả bao gồm cả xoá mềm
     @GetMapping("/all")
     @Operation(summary = "Lấy tất cả Specification", description = "Bao gồm cả các Specification đã bị xoá mềm")
     public ResponseEntity<List<Specification>> getAllIncludingDeleted() {
         return ResponseEntity.ok(specificationService.getAllIncludingDeleted());
     }
 
-    // 🔹 Lấy 1 bản ghi
+    // Lấy 1 bản ghi
     @GetMapping("/{id}")
     @Operation(summary = "Lấy Specification theo ID", description = "Có thể bao gồm cả bản ghi đã bị xoá mềm nếu includeDeleted=true")
     public ResponseEntity<Specification> getById(@PathVariable Long id,
@@ -47,7 +47,7 @@ public class SpecificationController {
         return ResponseEntity.ok(specificationService.getById(id, includeDeleted));
     }
 
-    // 🔹 Thêm mới
+    // Thêm mới
     @PostMapping
     @Operation(summary = "Thêm mới Specification", description = "Tạo Specification mới, yêu cầu truyền name và configurationId")
     public ResponseEntity<?> create(@RequestBody SpecificationRequest request) {
@@ -62,7 +62,7 @@ public class SpecificationController {
         }
     }
 
-    // 🔹 Cập nhật
+    // Cập nhật
     @PatchMapping("/{id}")
     @Operation(summary = "Cập nhật Specification", description = "Cập nhật name và configurationId theo ID")
     public ResponseEntity<?> update(@PathVariable(required = false) Long id, @RequestBody SpecificationRequest request) {
@@ -95,7 +95,7 @@ public class SpecificationController {
     }
 
 
-    // 🔹 Xoá mềm
+    // Xoá mềm
     @PatchMapping("/{id}/delete")
     @Operation(summary = "Xoá mềm Specification", description = "Đánh dấu Specification là đã xoá (soft delete)")
     public ResponseEntity<Void> softDelete(@PathVariable Long id) {
@@ -103,7 +103,7 @@ public class SpecificationController {
         return ResponseEntity.ok().build();
     }
 
-    // 🔹 Khôi phục
+    //  Khôi phục
     @PatchMapping("/{id}/restore")
     @Operation(summary = "Khôi phục Specification", description = "Khôi phục Specification đã bị xoá mềm")
     public ResponseEntity<Void> restore(@PathVariable Long id) {
@@ -111,7 +111,7 @@ public class SpecificationController {
         return ResponseEntity.ok().build();
     }
 
-    // ⚙️ Hàm xử lý lỗi dùng chung
+    // Hàm xử lý lỗi dùng chung
     private ResponseEntity<Map<String, Object>> buildError(Exception e) {
         Map<String, Object> error = new HashMap<>();
         error.put("error", e.getClass().getSimpleName());

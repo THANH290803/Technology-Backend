@@ -9,10 +9,14 @@ import java.util.List;
 public class OrderRequest {
     private Integer status;
     private LocalDateTime createdDate;
+    private String orderCode;
     private String customerName;
     private String customerPhone;
     private String customerAddress;
     private Integer paymentMethod;
+    private Integer totalPrice;
+    private Integer vat;
+    private String note; // ghi chú của khách
     private Long userId;
     private List<OrderDetailRequest> orderDetails;
 }

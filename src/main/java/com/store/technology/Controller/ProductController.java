@@ -90,22 +90,35 @@ public class ProductController {
     @Operation(
             summary = "Thêm mới sản phẩm",
             description = """
-        Tạo mới một sản phẩm cùng danh sách chi tiết cấu hình (ProductDetails).
-        - Tự động sinh `productCode`.
-        - Nhận vào danh sách cấu hình gồm `configurationId`, `quantity`, `price`.
-        """
+    Tạo mới một sản phẩm cùng danh sách chi tiết cấu hình (ProductDetails).
+    - Tự động sinh `productCode`.
+    - Nhận vào danh sách cấu hình gồm `configurationId`, `quantity`, `price`.
+    """
     )
     public ResponseEntity<?> createProduct(@RequestBody ProductRequest request) {
-        Product product = productService.createProductWithDetails(request);
-        return ResponseEntity.ok(product);
+        try {
+            Product product = productService.createProductWithDetails(request);
+            return ResponseEntity.ok(product);
+        } catch (Exception e) {
+            e.printStackTrace(); // log lỗi chi tiết ra console
+            return ResponseEntity
+                    .badRequest()
+                    .body("Lỗi khi tạo sản phẩm: " + e.getMessage());
+        }
     }
 
     @PatchMapping("/updateProductWithProductDetail/{id}")
-    // 🟡 Cập nhật sản phẩm (PATCH)
     @Operation(summary = "Cập nhật sản phẩm", description = "Cập nhật thông tin sản phẩm và chi tiết sản phẩm theo ID.")
-    public ResponseEntity<Product> updateProductWithProductDetail(@PathVariable Long id, @RequestBody ProductRequest request) {
-        Product updated = productService.updateProductWithProductDetail(id, request);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<?> updateProductWithProductDetail(@PathVariable Long id, @RequestBody ProductRequest request) {
+        try {
+            Product updated = productService.updateProductWithProductDetail(id, request);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            e.printStackTrace(); // log lỗi chi tiết ra console
+            return ResponseEntity
+                    .badRequest()
+                    .body("Lỗi khi cập nhật sản phẩm: " + e.getMessage());
+        }
     }
 
     // Xóa mềm

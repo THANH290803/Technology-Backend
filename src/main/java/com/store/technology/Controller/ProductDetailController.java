@@ -25,10 +25,40 @@ public class ProductDetailController {
     }
 
     // 🔹 Lấy tất cả (chưa xoá mềm)
+    /**
+     * API endpoint để lấy danh sách ProductDetail với các tùy chọn lọc và sắp xếp.
+     *
+     * URL: GET /product-details
+     *
+     * @param categoryId (optional) Lọc sản phẩm theo danh mục. Nếu null, không lọc theo danh mục.
+     * @param brandId    (optional) Lọc sản phẩm theo thương hiệu. Nếu null, không lọc theo thương hiệu.
+     * @param minPrice   (optional) Lọc sản phẩm có giá >= minPrice. Nếu null, không lọc giá tối thiểu.
+     * @param maxPrice   (optional) Lọc sản phẩm có giá <= maxPrice. Nếu null, không lọc giá tối đa.
+     * @param sortBy     (optional) Trường để sắp xếp: "price" hoặc "createdAt". Nếu null, mặc định là "createdAt".
+     * @param sortDir    (optional) Hướng sắp xếp: "asc" (tăng dần) hoặc "desc" (giảm dần). Nếu null, mặc định là "desc".
+     *
+     * @return List<ProductDetail> Danh sách các ProductDetail thỏa mãn điều kiện lọc và sắp xếp.
+     *
+     * Ví dụ sử dụng:
+     * 1. Lấy sản phẩm theo danh mục 2, thương hiệu 3, giá 100-500, sắp xếp theo giá tăng dần:
+     *    GET /product-details?categoryId=2&brandId=3&minPrice=100&maxPrice=500&sortBy=price&sortDir=asc
+     *
+     * 2. Lấy tất cả sản phẩm, sắp xếp theo mới nhất trước:
+     *    GET /product-details?sortBy=createdAt&sortDir=desc
+     */
     @GetMapping
     @Operation(summary = "Lấy danh sách Product Detail", description = "Chỉ lấy các Product Detail chưa bị xoá mềm")
-    public List<ProductDetail> getAll() {
-        return service.getAllNotDeleted();
+    public ResponseEntity<?> getProductDetails(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) List<Long> brandId, // <── CHỈ SỬA Ở ĐÂY
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sortDir
+    ) {
+        return ResponseEntity.ok(
+                service.getFiltered(categoryId, brandId, minPrice, maxPrice, sortBy, sortDir)
+        );
     }
 
     // 🔹 Lấy tất cả (bao gồm xoá mềm)
@@ -64,7 +94,7 @@ public class ProductDetailController {
 
     // 🔹 Thêm mới
     @PostMapping
-    @Operation(summary = "Thêm mới Product Detail", description = "Tạo Product Detail mới với configurationId, productId, quantity, price")
+    @Operation(summary = "Thêm mới Product Detail", description = "Tạo Product Detail mới với configurationId, productId, quantity, price, shortDescription, longDescription")
     public ResponseEntity<?> create(@RequestBody ProductDetailRequest request) {
         try {
             ProductDetail detail = service.createFromJson(
@@ -89,7 +119,7 @@ public class ProductDetailController {
 
     // 🔹 Cập nhật
     @PatchMapping("/{id}")
-    @Operation(summary = "Cập nhật Product Detail", description = "Cập nhật thông tin Product Detail theo ID")
+    @Operation(summary = "Cập nhật Product Detail", description = "Cập nhật Product Detail gồm thông tin giá, số lượng, mô tả ngắn và mô tả dài")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProductDetailRequest request) {
         try {
             ProductDetail updated = service.updateFromJson(

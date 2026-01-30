@@ -1,6 +1,8 @@
 package com.store.technology.Controller;
 
+import com.store.technology.DTO.ErrorResponse;
 import com.store.technology.DTO.OrderRequest;
+import com.store.technology.DTO.OrderStatusDTO;
 import com.store.technology.Entity.Order;
 import com.store.technology.Service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Orders", description = "CRUD API cho Orders (Soft Delete + Restore)")
 @RestController
@@ -30,6 +33,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders(false));
     }
 
+
     // ✅ Lấy tất cả đơn hàng (có thể bao gồm đã xoá nếu includeDeleted=true)
     @GetMapping("/all")
     @Operation(
@@ -42,16 +46,25 @@ public class OrderController {
 
     // ✅ Lấy 1 đơn hàng (chưa xoá hoặc bao gồm xoá nếu includeDeleted=true)
     @GetMapping("/{id}")
-    @Operation(
-            summary = "Lấy chi tiết đơn hàng",
-            description = "Trả về thông tin chi tiết của một đơn hàng theo ID. Có thể bao gồm đơn hàng đã bị xóa nếu truyền `includeDeleted=true`."
-    )
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id,
-                                              @RequestParam(defaultValue = "false") boolean includeDeleted) {
+    public ResponseEntity<Order> getOrderById(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean includeDeleted
+    ) {
         return orderService.getOrderById(id, includeDeleted)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.status(404).body(null));
     }
+
+    // Lấy đơn hnagf theo người dùng
+    @Operation(
+            summary = "Lấy đơn hàng theo người dùng",
+            description = "Lấy đơn hàng theo người dùng"
+    )
+    @GetMapping("/user/{userId}")
+    public List<Order> getOrdersByUser(@PathVariable Long userId) {
+        return orderService.getOrdersByUser(userId);
+    }
+
 
     // ✅ Tạo đơn hàng
     @PostMapping
@@ -73,6 +86,21 @@ public class OrderController {
     public ResponseEntity<Order> patchUpdateOrder(@PathVariable Long id, @RequestBody Order order) {
         Order updated = orderService.patchUpdateOrder(id, order);
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/update-status-order/{id}")
+    public ResponseEntity<?> updateOrderStatus(
+            @PathVariable Long id,
+            @RequestBody OrderStatusDTO request
+    ) {
+        try {
+            Order updatedOrder = orderService.patchUpdateOrderStatus(id, request.getStatus());
+            return ResponseEntity.ok(updatedOrder);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorResponse(e.getMessage()));
+        }
     }
 
     // ✅ Xoá mềm đơn hàng

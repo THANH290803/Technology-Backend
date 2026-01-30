@@ -1,5 +1,6 @@
 package com.store.technology.Controller;
 
+import com.store.technology.DTO.UserStatisticResponse;
 import com.store.technology.Entity.User;
 import com.store.technology.Security.JwtTokenUtil;
 import com.store.technology.Service.RoleService;
@@ -31,6 +32,12 @@ public class UserController {
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    // Lấy thông tin khách hàng
+    @GetMapping("/statistics")
+    public List<UserStatisticResponse> getUserStatistics() {
+        return userService.getUsersRole2Statistics();
     }
 
     // 2. Lấy tất cả user kể cả đã xoá

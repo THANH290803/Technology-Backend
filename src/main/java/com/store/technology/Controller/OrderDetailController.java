@@ -20,7 +20,7 @@ public class OrderDetailController {
         this.service = service;
     }
 
-    // ✅ 1. Lấy các đơn hàng chi tiết chưa xoá mềm
+    // 1. Lấy các đơn hàng chi tiết chưa xoá mềm
     @GetMapping
     @Operation(
             summary = "Lấy danh sách chi tiết đơn hàng đang hoạt động",
@@ -30,7 +30,7 @@ public class OrderDetailController {
         return ResponseEntity.ok(service.getAllNotDeleted());
     }
 
-    // ✅ 2. Lấy tất cả các chi tiết đơn hàng (kể cả xoá)
+    // 2. Lấy tất cả các chi tiết đơn hàng (kể cả xoá)
     @GetMapping("/all")
     @Operation(
             summary = "Lấy toàn bộ chi tiết đơn hàng (bao gồm cả đã xóa)",
@@ -40,7 +40,7 @@ public class OrderDetailController {
         return ResponseEntity.ok(service.getAllIncludingDeleted());
     }
 
-    // ✅ 3. Lấy 1 đơn hàng chi tiết chưa xoá mềm
+    // 3. Lấy 1 đơn hàng chi tiết chưa xoá mềm
     @GetMapping("/{id}")
     @Operation(
             summary = "Lấy chi tiết đơn hàng theo ID (chưa bị xóa)",
@@ -51,7 +51,7 @@ public class OrderDetailController {
         return detail != null ? ResponseEntity.ok(detail) : ResponseEntity.notFound().build();
     }
 
-    // ✅ 4. Lấy 1 đơn hàng chi tiết (kể cả xoá mềm)
+    // 4. Lấy 1 đơn hàng chi tiết (kể cả xoá mềm)
     @GetMapping("/{id}/any")
     @Operation(
             summary = "Lấy chi tiết đơn hàng theo ID (kể cả đã xóa)",
@@ -62,7 +62,7 @@ public class OrderDetailController {
         return detail != null ? ResponseEntity.ok(detail) : ResponseEntity.notFound().build();
     }
 
-    // ✅ 5. Thêm mới
+    // 5. Thêm mới
     @PatchMapping("/create")
     @Operation(
             summary = "Tạo chi tiết đơn hàng mới",
@@ -72,7 +72,7 @@ public class OrderDetailController {
         return ResponseEntity.ok(service.create(detail));
     }
 
-    // ✅ 6. Cập nhật (PATCH)
+    // 6. Cập nhật (PATCH)
     @PatchMapping("/{id}/update")
     @Operation(
             summary = "Cập nhật chi tiết đơn hàng",
@@ -83,7 +83,7 @@ public class OrderDetailController {
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
-    // ✅ 7. Xoá mềm
+    // 7. Xoá mềm
     @PatchMapping("/{id}/delete")
     @Operation(
             summary = "Xóa mềm chi tiết đơn hàng",
@@ -94,7 +94,7 @@ public class OrderDetailController {
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ 8. Khôi phục
+    // 8. Khôi phục
     @PatchMapping("/{id}/restore")
     @Operation(
             summary = "Khôi phục chi tiết đơn hàng đã xóa",

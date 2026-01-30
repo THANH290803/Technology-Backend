@@ -1,8 +1,10 @@
 package com.store.technology.Service;
 
 import com.store.technology.Controller.UserController;
+import com.store.technology.DTO.UserStatisticResponse;
 import com.store.technology.Entity.Role;
 import com.store.technology.Entity.User;
+import com.store.technology.Repository.OrderRepository;
 import com.store.technology.Repository.RoleRepository;
 import com.store.technology.Repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -26,6 +29,9 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     // Lấy tất cả user chưa xoá
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -34,6 +40,26 @@ public class UserService {
     // Lấy tất cả user kể cả đã xoá
     public List<User> getAllUsersIncludingDeleted() {
         return userRepository.findAllIncludingDeleted();
+    }
+
+    // Lấy thông tin khách hàng
+    public List<UserStatisticResponse> getUsersRole2Statistics() {
+        List<User> users = userRepository.findByRole_Id(2L);
+
+        return users.stream().map(user -> {
+            Long totalOrders = orderRepository.countByUserId(user.getId());
+            Long totalSpent = orderRepository.sumTotalPriceByUserId(user.getId());
+
+            return new UserStatisticResponse(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getPhoneNumber(),
+                    user.getAddress(),
+                    totalOrders,
+                    totalSpent
+            );
+        }).collect(Collectors.toList());
     }
 
     // Lấy 1 user theo id (chưa xoá)

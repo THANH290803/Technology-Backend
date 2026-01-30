@@ -12,5 +12,6 @@ public class ProductRequest {
     private Integer totalQuality;
     private Long brandId;
     private Long categoryId;
+    private String description;
     private List<ProductDetailRequest> productDetails;
 }
